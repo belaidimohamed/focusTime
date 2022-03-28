@@ -1,20 +1,53 @@
-import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
+import React, { useState } from 'react';
+import Focus from './pages/Focus';
+import Timer from './pages/Timer';
+import { paddingSizes } from './utils/sizes';
+import FocusHistory from './pages/FocusHistory';
 
 export default function App() {
+  const [focusSubject , setFocusSubject] = useState(null)
+  const [focusHistory, setfocusHistory] = useState([])
+  const STATUSES = {
+    COMPLETE: 1,
+    CANCELED: 2
+  }
+  const addFocusHistorySubjectWithState = (subject,status) => {
+    setfocusHistory([...focusHistory,{subject,status}])
+  }
+  const onClear = () => {
+    
+  }
+  
   return (
     <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
+      {focusSubject ? (
+        <Timer 
+          focusSubject = {focusSubject} 
+          clearSubject ={() => {
+            addFocusHistorySubjectWithState(focusSubject,STATUSES.CANCELED)
+            setFocusSubject(null)
+          }} 
+          onTimerEnd={() => {
+            addFocusHistorySubjectWithState(focusSubject,STATUSES.COMPLETE)
+            setFocusSubject(null)
+          }} 
+        />
+      ) : ( 
+      <>
+        <Focus addSubject = {setFocusSubject}/>
+        <FocusHistory focusHistory={focusHistory}
+          onClear = {onClear}
+        />
+      </>
+      )}
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+    flex:1,
+    paddingTop:paddingSizes.xxl,
+    backgroundColor: '#252250'
+  }
+})
